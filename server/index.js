@@ -8,13 +8,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* ✅ Product schema */
+/* ✅ Product schema (UPDATED CLEAN VERSION) */
 const ProductSchema = new mongoose.Schema({
   name: String,
   category: String,
-  desc: String,
-  img: String,
-  price: Number
+  description: String,
+  imageUrl: String,
+  price: Number,
+  stock: Number
 });
 
 const Product = mongoose.model("Product", ProductSchema);
@@ -24,9 +25,20 @@ app.get("/", (req, res) => {
   res.send("Fabornas Backend Running 🚀");
 });
 
+/* ✅ Add Product */
 app.post("/add-product", async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const { name, category, description, imageUrl, price, stock } = req.body;
+
+    const product = new Product({
+      name,
+      category,
+      description,
+      imageUrl,
+      price,
+      stock
+    });
+
     await product.save();
     res.send("Product Added");
   } catch (error) {
@@ -35,6 +47,7 @@ app.post("/add-product", async (req, res) => {
   }
 });
 
+/* ✅ Get Products */
 app.get("/products", async (req, res) => {
   try {
     console.log("Fetching products...");
