@@ -1,0 +1,24 @@
+{
+  "name": "react-node-app",
+  "version": "1.0.0",
+  "description": "A React application with a Node.js backend for managing products.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.6",
+    "dotenv": "^10.0.0",
+    "express": "^4.22.1",
+    "mongoose": "^9.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "type": "commonjs"
+}
