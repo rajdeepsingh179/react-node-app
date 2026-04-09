@@ -16,8 +16,7 @@ function App() {
     category: "Jewelry",
     desc: "",
     img: "",
-    price: "",
-    stock: ""
+    price: ""
   });
 
   // 🔥 Fetch products from backend
@@ -26,7 +25,7 @@ function App() {
   }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:5000/api/products");
+    const res = await axios.get("http://localhost:5000/products");
     setProducts(res.data);
   };
 
@@ -34,22 +33,14 @@ function App() {
   const addProduct = async () => {
     if (!form.name || !form.price) return;
 
-    await axios.post("http://localhost:5000/api/products", {
-      name: form.name,
-      category: form.category,
-      description: form.desc,
-      imageUrl: form.img,
-      price: form.price,
-      stock: form.stock
-    });
+    await axios.post("http://localhost:5000/add-product", form);
 
     setForm({
       name: "",
       category: "Jewelry",
       desc: "",
       img: "",
-      price: "",
-      stock: ""
+      price: ""
     });
 
     fetchProducts(); // refresh list
