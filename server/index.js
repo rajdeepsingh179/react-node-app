@@ -33,14 +33,24 @@ const Product = mongoose.model("Product", ProductSchema);
 
 /* ✅ Routes */
 app.post("/add-product", async (req, res) => {
-  const product = new Product(req.body);
-  await product.save();
-  res.send("Product Added");
+  try {
+    const product = new Product(req.body);
+    await product.save();
+    res.send("Product Added");
+  } catch (error) {
+    console.log("Add Product Error:", error);
+    res.status(500).send("Error adding product");
+  }
 });
 
 app.get("/products", async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (error) {
+    console.log("Products Error:", error);
+    res.status(500).json({ error: "Failed to fetch products" });
+  }
 });
 
 /* 🔥 IMPORTANT: PORT FIX */
