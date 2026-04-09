@@ -37,6 +37,7 @@ app.post("/add-product", async (req, res) => {
 
 app.get("/products", async (req, res) => {
   try {
+    console.log("Fetching products...");
     const products = await Product.find();
     res.json(products);
   } catch (error) {
@@ -48,7 +49,9 @@ app.get("/products", async (req, res) => {
 /* 🔥 CONNECT DB FIRST, THEN START SERVER */
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000
+})
   .then(() => {
     console.log("MongoDB Atlas Connected");
 
