@@ -12,6 +12,8 @@ const MONGODB_URI = process.env.MONGODB_URI;
 // Middleware
 app.use(cors());
 app.use(express.json());
+//
+app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use('/api/products', productRoutes);
@@ -53,3 +55,17 @@ mongoose.connect(process.env.MONGODB_URI)
     console.error('❌ MongoDB connection error:', err);
     process.exit(1);
 });
+const multer = require("multer");
+const path = require("path");
+// storage config
+const storage = multer.diskStorage({
+  destination: "./uploads/",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
+// serve static folder
+app.use("/uploads", express.static("uploads"));

@@ -1,5 +1,5 @@
 {
-  "name": "react-node-app",
+  "name": "server",
   "version": "1.0.0",
   "description": "A React application with a Node.js backend for managing products.",
   "main": "app.js",
@@ -12,13 +12,10 @@
     "cors": "^2.8.6",
     "dotenv": "^10.0.0",
     "express": "^4.22.1",
-    "mongoose": "^9.4.1"
+    "mongoose": "^9.4.1",
+    "multer": "^2.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
-  },
-  "author": "",
-  "license": "ISC",
-  "keywords": [],
-  "type": "commonjs"
+  }
 }
