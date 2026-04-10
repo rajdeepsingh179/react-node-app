@@ -6,8 +6,14 @@ const Product = require('../models/Product');
 router.get('/', async (req, res) => {
     try {
         const products = await Product.find();
+
+        console.log("✅ Products from DB:", products); // 👈 YAHAN ADD KARNA HAI
+
         res.json(products);
     } catch (error) {
+
+        console.log("❌ ERROR:", error); // 👈 YAHAN BHI ADD KAR
+
         res.status(500).json({ message: error.message });
     }
 });
