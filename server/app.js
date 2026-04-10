@@ -1,7 +1,10 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+const multer = require("multer");
+const path = require("path");
 
 const productRoutes = require('./routes/products');
 
@@ -9,55 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-// Middleware
+/* ================== MIDDLEWARE ================== */
 app.use(cors());
 app.use(express.json());
-//
-app.use("/uploads", express.static("uploads"));
 
-// Routes
-app.use('/api/products', productRoutes);
-
-// Root route (optional but useful)
-app.get('/', (req, res) => {
-    res.send('Fabornas API Running 🚀');
-});
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ message: 'Route not found' });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(err.status || 500).json({ 
-        message: err.message || 'Internal Server Error' 
-    });
-});
-
-// MongoDB connection
-if (!MONGODB_URI) {
-    console.error('❌ MONGODB_URI not set in environment variables');
-    process.exit(1);
-}
-
-mongoose.connect(process.env.MONGODB_URI)
-.then(() => {
-    console.log('✅ MongoDB connected');
-    
-    // Start server only after DB connect
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
-})
-.catch(err => {
-    console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
-});
-const multer = require("multer");
-const path = require("path");
-// storage config
+/* ================== FILE UPLOAD ================== */
 const storage = multer.diskStorage({
   destination: "./uploads/",
   filename: (req, file, cb) => {
@@ -66,6 +25,76 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-// serve static folder
 app.use("/uploads", express.static("uploads"));
+
+/* ================== SCHEMAS ================== */
+const contactSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  message: String,
+}, { timestamps: true });
+
+const Contact = mongoose.model("Contact", contactSchema);
+
+/* ================== ROUTES ================== */
+
+// Products route
+app.use('/api/products', productRoutes);
+
+// Root
+app.get('/', (req, res) => {
+  res.send('Fabornas API Running 🚀');
+});
+
+/* CONTACT API */
+app.post("/api/contact", async (req, res) => {
+  try {
+    console.log("BODY:", req.body);
+
+    const newMsg = new Contact(req.body);
+    await newMsg.save();
+
+    console.log("Saved Successfully");
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("ERROR:", err);
+    res.status(500).json({ error: "Error saving message" });
+  }
+});
+
+/* ================== ERROR HANDLING ================== */
+
+// 404 (ALWAYS LAST)
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Error middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal Server Error'
+  });
+});
+
+/* ================== DB CONNECT ================== */
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI not set');
+  process.exit(1);
+}
+
+mongoose.connect(MONGODB_URI)
+.then(() => {
+  console.log('✅ MongoDB connected');
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+})
+.catch(err => {
+  console.error('❌ MongoDB error:', err);
+  process.exit(1);
+});

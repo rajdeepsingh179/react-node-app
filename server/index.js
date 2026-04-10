@@ -8,7 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* ✅ Product schema (UPDATED CLEAN VERSION) */
+/* ================== SCHEMAS ================== */
+
+/* PRODUCT */
 const ProductSchema = new mongoose.Schema({
   name: String,
   category: String,
@@ -20,12 +22,23 @@ const ProductSchema = new mongoose.Schema({
 
 const Product = mongoose.model("Product", ProductSchema);
 
-/* ✅ Routes */
+/* CONTACT */
+const contactSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  message: String,
+}, { timestamps: true });
+
+const Contact = mongoose.model("Contact", contactSchema);
+
+/* ================== ROUTES ================== */
+
+/* HOME */
 app.get("/", (req, res) => {
   res.send("Fabornas Backend Running 🚀");
 });
 
-/* ✅ Add Product */
+/* ADD PRODUCT */
 app.post("/add-product", async (req, res) => {
   try {
     const { name, category, description, imageUrl, price, stock } = req.body;
@@ -47,19 +60,41 @@ app.post("/add-product", async (req, res) => {
   }
 });
 
-/* ✅ Get Products */
+/* GET PRODUCTS */
 app.get("/products", async (req, res) => {
   try {
-    console.log("Fetching products...");
     const products = await Product.find();
     res.json(products);
   } catch (error) {
-    console.log("Products Error:", error);
     res.status(500).json({ error: "Failed to fetch products" });
   }
 });
 
-/* 🔥 CONNECT DB FIRST, THEN START SERVER */
+/* 🔥 TEST ROUTE (IMPORTANT FOR DEBUG) */
+app.get("/api/contact", (req, res) => {
+  res.send("GET working");
+});
+
+/* CONTACT API (POST) */
+app.post("/api/contact", async (req, res) => {
+  try {
+    console.log("BODY:", req.body); // debug
+
+    const newMsg = new Contact(req.body);
+    await newMsg.save();
+
+    console.log("Saved Successfully");
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("ERROR:", err);
+    res.status(500).json({ error: "Error saving message" });
+  }
+});
+
+/* ================== DB CONNECT ================== */
+
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.MONGODB_URI, {

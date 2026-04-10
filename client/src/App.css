@@ -1,25 +1,29 @@
+* {
+  box-sizing: border-box;
+}
+/* GLOBAL */
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: #0f0f0f;
-  color: #fff;
+  background: #2b0f1a;
+  color: #f8fafc;
 }
 
-/* Container */
+/* CONTAINER */
 .container {
   text-align: center;
   padding: 30px;
 }
 
-/* Heading */
+/* HEADING */
 h1 {
   font-size: 36px;
-  color: gold;
+  color: #d4af37;
   letter-spacing: 2px;
   margin-bottom: 30px;
 }
 
-/* Form */
+/* FORM */
 .form {
   display: flex;
   flex-wrap: wrap;
@@ -34,14 +38,14 @@ h1 {
   border: none;
   outline: none;
   width: 150px;
-  background: #1a1a1a;
+  background: #3b0f1f;
   color: #fff;
 }
 
-/* Button */
+/* BUTTON */
 .form button {
   padding: 12px 20px;
-  background: gold;
+  background: linear-gradient(135deg, gold, #d4af37);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -51,116 +55,219 @@ h1 {
 }
 
 .form button:hover {
-  background: #ffd700cc;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
 }
 
-/* Grid */
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 25px;
 }
 
-/* Card */
+/* CARD */
 .card {
-  background: #1a1a1a;
+  background: #3b0f1f;
   border-radius: 15px;
   padding: 20px;
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+  position: relative;
+  overflow: hidden;
   transition: 0.3s;
 }
 
 .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
 }
 
-/* Image */
+/* CARD SHINE */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 215, 0, 0.3),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.card:hover::before {
+  left: 100%;
+}
+
+/* IMAGE */
 .card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
   border-radius: 12px;
+  transition: 0.4s;
 }
 
-/* Title */
+.card:hover img {
+  transform: scale(1.08);
+}
+
+/* TITLE */
 .card h3 {
   margin-top: 15px;
-  color: gold;
+  color: #d4af37;
 }
 
-/* Price */
+/* PRICE */
 .card p {
   font-size: 18px;
   margin: 10px 0;
 }
 
-/* Delete button */
+/* DELETE BUTTON */
 .card button {
   padding: 10px 15px;
-  background: crimson;
+  background: #7f1d1d;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   color: white;
-  transition: 0.3s;
 }
 
 .card button:hover {
-  background: red;
-}
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  background: #111;
-  border-bottom: 1px solid #333;
+  background: #b91c1c;
 }
 
-.logo {
-  color: gold;
-  font-size: 22px;
-  letter-spacing: 2px;
-}
-
-.nav-links span {
-  margin-left: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.nav-links span:hover {
-  color: gold;
-}
+/* NAVBAR */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
+  background: linear-gradient(90deg, #2b0f1a, #3b0f1f);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
-.cart-box {
-  background: #1a1a1a;
-  padding: 15px;
-  margin: 20px;
-  border-radius: 10px;
-  color: gold;
+
+/* LOGO */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
+/* LOGO CIRCLE */
+.logo-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, gold, #d4af37);
+  color: black;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Georgia', serif;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+}
+
+/* LOGO SHINE */
+@keyframes goldShine {
+  0% { background-position: -200px; }
+  100% { background-position: 200px; }
+}
+
+.logo-link {
+  .logo-link {
+  text-decoration: none;
+
+  background: linear-gradient(
+    120deg,
+    #d4af37 20%,
+    #fff5cc 40%,
+    #d4af37 60%
+  );
+
+  background-clip: text;            /* ✅ ADD THIS */
+  -webkit-background-clip: text;
+
+  color: transparent;               /* ✅ for standard */
+  -webkit-text-fill-color: transparent;
+
+  background-size: 200px;
+  animation: goldShine 3s infinite linear;
+  letter-spacing: 2px;
+}
+  text-decoration: none;
+  background: linear-gradient(
+    120deg,
+    #d4af37 20%,
+    #fff5cc 40%,
+    #d4af37 60%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200px;
+  animation: goldShine 3s infinite linear;
+  letter-spacing: 2px;
+}
+
+/* NAV LINKS */
 .nav-links a {
   margin-left: 20px;
   text-decoration: none;
-  color: white;
+  color: #f1f5f9;
+  position: relative;
+  transition: 0.3s;
+}
+
+/* NAV HOVER LINE */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background: #d4af37;
+  transition: 0.3s;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
 }
 
 .nav-links a:hover {
-  color: gold;
+  color: #d4af37;
 }
+
+/* CART BOX */
+.cart-box {
+  background: #3b0f1f;
+  padding: 15px;
+  margin: 20px;
+  border-radius: 10px;
+  color: #d4af37;
+}
+
+/* CHECKOUT BUTTON */
 .checkout-btn {
   padding: 12px 20px;
-  background: gold;
+  background: linear-gradient(135deg, gold, #d4af37);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   color: black;
   font-weight: bold;
   margin-top: 20px;
+}
+
+.checkout-btn:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
 }
