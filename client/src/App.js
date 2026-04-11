@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
 import Home from "./Home.js";
 import Products from "./Products";
 import Cart from "./Cart";
-import Contact from "./Contact";   // ✅ ADD THIS
+import Contact from "./Contact";
+import Admin from "./Admin";   // 🔥 ADD THIS
+
 import "./App.css";
 
 function App() {
@@ -30,7 +33,8 @@ function App() {
         <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/products">Products</Link>
-          <Link to="/contact">Contact</Link> {/* ✅ ADD THIS */}
+          <Link to="/contact">Contact</Link>
+          <Link to="/admin">Admin</Link> {/* 🔥 ADD THIS */}
           <Link to="/cart">Cart 🛒 ({cart.length})</Link>
         </div>
 
@@ -50,7 +54,9 @@ function App() {
           element={<Cart cart={cart} setCart={setCart} />} 
         />
 
-        <Route path="/contact" element={<Contact />} /> {/* ✅ ADD THIS */}
+        <Route path="/contact" element={<Contact />} />
+
+        <Route path="/admin" element={<Admin />} /> {/* 🔥 ADD THIS */}
 
       </Routes>
 
