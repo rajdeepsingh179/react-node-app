@@ -1,85 +1,78 @@
+const express = require("express");
+const router = express.Router();
+const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
+const verifyAdmin = require("../middleware/admin"); // 🔐
 
+// STORAGE
 const storage = multer.diskStorage({
-  destination: "./uploads/",
+  destination: "uploads/",
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
 const upload = multer({ storage });
-const express = require('express');
-const router = express.Router();
-const Product = require('../models/Product');
 
-// GET all products
-router.get('/', async (req, res) => {
-    try {
-        const products = await Product.find();
-
-        console.log("✅ Products from DB:", products); // 👈 YAHAN ADD KARNA HAI
-
-        res.json(products);
-    } catch (error) {
-
-        console.log("❌ ERROR:", error); // 👈 YAHAN BHI ADD KAR
-
-        res.status(500).json({ message: error.message });
-    }
+// SCHEMA
+const ProductSchema = new mongoose.Schema({
+  name: String,
+  category: String,
+  description: String,
+  imageUrl: String,
+  price: Number,
+  stock: Number
 });
 
-// CREATE product
-router.post("/", upload.single("image"), async (req, res) => {
+const Product = mongoose.model("Product", ProductSchema);
+
+// 🔐 ADD PRODUCT (ADMIN ONLY)
+router.post("/", verifyAdmin, upload.single("image"), async (req, res) => {
   try {
     const product = new Product({
       name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
-      imageUrl: req.file ? `/uploads/${req.file.filename}` : "",
       category: req.body.category,
-      stock: req.body.stock
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : ""
     });
 
-    const newProduct = await product.save();
-    res.status(201).json(newProduct);
+    await product.save();
+    res.json({ success: true });
 
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error adding product" });
   }
 });
 
-// UPDATE product
-router.patch('/:id', async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) return res.status(404).json({ message: 'Product not found' });
-
-        if (req.body.name) product.name = req.body.name;
-        if (req.body.price) product.price = req.body.price;
-        if (req.body.description) product.description = req.body.description;
-        if (req.body.imageUrl) product.imageUrl = req.body.imageUrl;
-        if (req.body.category) product.category = req.body.category;
-        if (req.body.stock) product.stock = req.body.stock;
-
-        const updatedProduct = await product.save();
-        res.json(updatedProduct);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+// 📦 GET PRODUCTS (PUBLIC)
+router.get("/", async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: "Fetch error" });
+  }
 });
 
-// DELETE product
-router.delete('/:id', async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) return res.status(404).json({ message: 'Product not found' });
+// 🔐 DELETE PRODUCT (ADMIN ONLY)
+router.delete("/:id", verifyAdmin, async (req, res) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
 
-        await product.deleteOne();
-        res.json({ message: 'Product deleted' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (!deleted) {
+      return res.status(404).json({ success: false });
     }
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Delete failed" });
+  }
 });
 
 module.exports = router;

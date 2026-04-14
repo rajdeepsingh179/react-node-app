@@ -1,113 +1,92 @@
+/* GLOBAL RESET */
 * {
   box-sizing: border-box;
 }
-/* GLOBAL */
+
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: #2b0f1a;
+  background: linear-gradient(135deg, #2b0f1a, #1a0a12);
   color: #f8fafc;
 }
 
 /* CONTAINER */
 .container {
-  text-align: center;
-  padding: 30px;
+  padding: 40px;
 }
 
 /* HEADING */
 h1 {
-  font-size: 36px;
+  text-align: center;
   color: #d4af37;
-  letter-spacing: 2px;
   margin-bottom: 30px;
+  font-size: 40px;
 }
 
 /* FORM */
 .form {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .form input {
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
-  outline: none;
-  width: 150px;
+  width: 180px;
   background: #3b0f1f;
-  color: #fff;
+  color: white;
 }
 
-/* BUTTON */
 .form button {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, gold, #d4af37);
+  padding: 12px 25px;
+  border-radius: 10px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  background: linear-gradient(135deg, gold, #d4af37);
   font-weight: bold;
-  color: black;
+  cursor: pointer;
   transition: 0.3s;
 }
 
 .form button:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+  box-shadow: 0 0 20px gold;
 }
 
 /* GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 25px;
 }
 
 /* CARD */
 .card {
   background: #3b0f1f;
-  border-radius: 15px;
+  border-radius: 20px;
   padding: 20px;
+  text-align: center;
+  transition: 0.4s;
   position: relative;
   overflow: hidden;
-  transition: 0.3s;
 }
 
+/* HOVER GLOW */
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
-}
-
-/* CARD SHINE */
-.card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 215, 0, 0.3),
-    transparent
-  );
-  transition: 0.5s;
-}
-
-.card:hover::before {
-  left: 100%;
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
 }
 
 /* IMAGE */
 .card img {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 15px;
+  margin-bottom: 10px;
   transition: 0.4s;
 }
 
@@ -117,35 +96,50 @@ h1 {
 
 /* TITLE */
 .card h3 {
-  margin-top: 15px;
   color: #d4af37;
+  margin: 10px 0;
 }
 
 /* PRICE */
 .card p {
-  font-size: 18px;
-  margin: 10px 0;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+/* BUTTONS */
+.card button {
+  margin: 5px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* CART BUTTON */
+.card button:first-of-type {
+  background: linear-gradient(135deg, gold, #d4af37);
+  color: black;
+}
+
+.card button:first-of-type:hover {
+  box-shadow: 0 0 15px gold;
 }
 
 /* DELETE BUTTON */
-.card button {
-  padding: 10px 15px;
-  background: #7f1d1d;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+.card button:last-of-type {
+  background: crimson;
   color: white;
 }
 
-.card button:hover {
-  background: #b91c1c;
+.card button:last-of-type:hover {
+  background: red;
 }
 
 /* NAVBAR */
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
   background: linear-gradient(90deg, #2b0f1a, #3b0f1f);
   padding: 15px 30px;
   display: flex;
@@ -161,113 +155,153 @@ h1 {
   gap: 10px;
 }
 
-/* LOGO CIRCLE */
 .logo-circle {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background: linear-gradient(135deg, gold, #d4af37);
+  background: gold;
   color: black;
-  font-weight: bold;
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-family: 'Georgia', serif;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+  align-items: center;
+  font-weight: bold;
 }
 
-/* LOGO SHINE */
-@keyframes goldShine {
-  0% { background-position: -200px; }
-  100% { background-position: 200px; }
-}
-
+/* LOGO TEXT */
 .logo-link {
-  .logo-link {
   text-decoration: none;
-
-  background: linear-gradient(
-    120deg,
-    #d4af37 20%,
-    #fff5cc 40%,
-    #d4af37 60%
-  );
-
-  background-clip: text;            /* ✅ ADD THIS */
-  -webkit-background-clip: text;
-
-  color: transparent;               /* ✅ for standard */
-  -webkit-text-fill-color: transparent;
-
-  background-size: 200px;
-  animation: goldShine 3s infinite linear;
-  letter-spacing: 2px;
-}
-  text-decoration: none;
-  background: linear-gradient(
-    120deg,
-    #d4af37 20%,
-    #fff5cc 40%,
-    #d4af37 60%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200px;
-  animation: goldShine 3s infinite linear;
-  letter-spacing: 2px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #d4af37;
 }
 
 /* NAV LINKS */
 .nav-links a {
   margin-left: 20px;
   text-decoration: none;
-  color: #f1f5f9;
-  position: relative;
+  color: white;
   transition: 0.3s;
-}
-
-/* NAV HOVER LINE */
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  width: 0%;
-  height: 2px;
-  bottom: -5px;
-  left: 0;
-  background: #d4af37;
-  transition: 0.3s;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
 }
 
 .nav-links a:hover {
   color: #d4af37;
 }
-
-/* CART BOX */
-.cart-box {
-  background: #3b0f1f;
+.filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, #1a1a1a, #2b0000);
   padding: 15px;
-  margin: 20px;
-  border-radius: 10px;
-  color: #d4af37;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
 }
 
-/* CHECKOUT BUTTON */
-.checkout-btn {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, gold, #d4af37);
+.search-input {
+  flex: 1;
+  padding: 12px 15px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: black;
-  font-weight: bold;
-  margin-top: 20px;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  transition: 0.3s;
 }
 
-.checkout-btn:hover {
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.search-input:focus {
+  border: 1px solid gold;
+  box-shadow: 0 0 10px gold;
+}
+
+.category-select {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.category-select:hover {
+  border: 1px solid gold;
+  box-shadow: 0 0 10px gold;
+}
+.filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, #1a1a1a, #2b0000);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #111;
+  color: white;
+}
+
+.search-input:focus {
+  border: 1px solid gold;
+  box-shadow: 0 0 10px gold;
+}
+
+.category-select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #111;
+  color: white;
+}
+
+.category-select:hover {
+  border: 1px solid gold;
+  box-shadow: 0 0 10px gold;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background: #111;
+  color: gold;
+}
+
+.navbar a {
+  margin: 0 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar button {
+  background: gold;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.login-box {
+  width: 300px;
+  margin: 100px auto;
+  padding: 30px;
+  background: #111;
+  color: white;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.login-box input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
 }

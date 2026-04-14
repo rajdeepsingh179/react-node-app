@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
+import "./App.css";
 
 function Products({ cart, setCart }) {
   const [products, setProducts] = useState([]);
+
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -13,15 +17,19 @@ function Products({ cart, setCart }) {
 
   const [imageFile, setImageFile] = useState(null);
 
-  // ✅ FETCH PRODUCTS
+  const getToken = () => localStorage.getItem("token");
+
   useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = () => {
     fetch("http://localhost:5000/api/products")
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.log(err));
-  }, []);
+  };
 
-  // ✅ HANDLE INPUT
   const handleChange = (e) => {
     setNewProduct({
       ...newProduct,
@@ -29,9 +37,10 @@ function Products({ cart, setCart }) {
     });
   };
 
-  // ✅ ADD PRODUCT
   const addProduct = async () => {
     try {
+      const token = getToken();
+
       const formData = new FormData();
 
       Object.keys(newProduct).forEach((key) => {
@@ -44,104 +53,96 @@ function Products({ cart, setCart }) {
 
       const res = await fetch("http://localhost:5000/api/products", {
         method: "POST",
+        headers: {
+          Authorization: "Bearer " + token
+        },
         body: formData
       });
 
       const data = await res.json();
 
-      setProducts([...products, data]);
-
-      // reset form
-      setNewProduct({
-        name: "",
-        price: "",
-        description: "",
-        category: "",
-        stock: ""
-      });
-
-      setImageFile(null);
+      if (data.success) {
+        alert("Product Added ✅");
+        fetchProducts();
+      } else {
+        alert("Not authorized ❌");
+      }
 
     } catch (err) {
       console.log(err);
+      alert("Server Error ❌");
     }
   };
 
-  // ✅ DELETE PRODUCT
   const deleteProduct = async (id) => {
-    try {
-      await fetch(`http://localhost:5000/api/products/${id}`, {
-        method: "DELETE"
-      });
+    const token = getToken();
 
-      setProducts(products.filter((p) => p._id !== id));
-    } catch (err) {
-      console.log(err);
-    }
+    const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+
+    if (data.success) fetchProducts();
+    else alert("Delete failed ❌");
   };
 
-  // ✅ ADD TO CART
   const addToCart = (item) => {
     setCart([...cart, item]);
   };
 
+  const filteredProducts = products.filter((item) => {
+    return (
+      item.name.toLowerCase().includes(search.toLowerCase()) &&
+      (category === "All" || item.category === category)
+    );
+  });
+
   return (
     <div className="container">
 
-      <h1>Products 🛍️</h1>
+      <h1>Fabornas Luxury Store 🛍️</h1>
 
-      {/* 🔹 ADD PRODUCT FORM */}
-      <div className="form">
+      <p style={{ color: "gold" }}>
+        Token: {getToken() ? "YES ✅" : "NO ❌"}
+      </p>
+
+      {/* FILTER */}
+      <div className="filter-bar">
         <input
-          name="name"
-          placeholder="Name"
-          value={newProduct.name}
-          onChange={handleChange}
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
 
-        <input
-          name="price"
-          placeholder="Price"
-          value={newProduct.price}
-          onChange={handleChange}
-        />
-
-        <input
-          name="description"
-          placeholder="Description"
-          value={newProduct.description}
-          onChange={handleChange}
-        />
-
-        <input
-          name="category"
-          placeholder="Category"
-          value={newProduct.category}
-          onChange={handleChange}
-        />
-
-        <input
-          name="stock"
-          placeholder="Stock"
-          value={newProduct.stock}
-          onChange={handleChange}
-        />
-
-        <input
-          type="file"
-          onChange={(e) => setImageFile(e.target.files[0])}
-        />
-
-        <button onClick={addProduct}>
-          Add Product
-        </button>
+        <select onChange={(e) => setCategory(e.target.value)}>
+          <option value="All">All</option>
+          <option value="Jewelry">Jewelry</option>
+        </select>
       </div>
 
-      {/* 🔹 PRODUCT GRID */}
+      {/* ADMIN FORM */}
+      {getToken() && (
+        <div className="form">
+          <input name="name" placeholder="Name" onChange={handleChange} />
+          <input name="price" placeholder="Price" onChange={handleChange} />
+          <input name="category" placeholder="Category" onChange={handleChange} />
+          <input type="file" onChange={(e) => setImageFile(e.target.files[0])} />
+
+          <button onClick={addProduct}>Add Product</button>
+        </div>
+      )}
+
+      {/* PRODUCTS */}
       <div className="grid">
-        {products.map((item) => (
+        {filteredProducts.map((item) => (
           <div key={item._id} className="card">
 
+            {/* 🔥 IMAGE FIX (THIS WAS MISSING) */}
             <img
               src={
                 item.imageUrl
@@ -154,15 +155,15 @@ function Products({ cart, setCart }) {
             <h3>{item.name}</h3>
             <p>₹{item.price}</p>
 
-            {/* 🛒 CART */}
             <button onClick={() => addToCart(item)}>
-              Add to Cart 🛒
+              Add to Cart
             </button>
 
-            {/* ❌ DELETE */}
-            <button onClick={() => deleteProduct(item._id)}>
-              Delete ❌
-            </button>
+            {getToken() && (
+              <button onClick={() => deleteProduct(item._id)}>
+                Delete ❌
+              </button>
+            )}
 
           </div>
         ))}

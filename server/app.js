@@ -4,12 +4,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
+const productRoutes = require("./routes/products");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 /* MIDDLEWARE */
 app.use(cors());
 app.use(express.json());
+
+// 🔥 IMPORTANT (ADD THIS)
+app.use("/uploads", express.static("uploads"));
 
 /* SCHEMA */
 const contactSchema = new mongoose.Schema({
@@ -22,12 +27,15 @@ const Contact = mongoose.model("Contact", contactSchema);
 
 /* ROUTES */
 
+// 🔥 PRODUCTS ROUTE
+app.use("/api/products", productRoutes);
+
 // test
 app.get("/", (req, res) => {
   res.send("Server running 🚀");
 });
 
-// POST
+// CONTACT POST
 app.post("/api/contact", async (req, res) => {
   try {
     const newMsg = new Contact(req.body);
@@ -38,7 +46,7 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// GET
+// CONTACT GET
 app.get("/api/contact", async (req, res) => {
   try {
     const messages = await Contact.find().sort({ createdAt: -1 });
