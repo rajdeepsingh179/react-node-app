@@ -29,8 +29,11 @@ function Navbar({ cart }) {
         <Link to="/products">Products</Link>
         <Link to="/contact">Contact</Link>
 
-        {/* 🔐 ADMIN ONLY */}
+        {/* 🔐 ADMIN */}
         {token && <Link to="/admin">Admin</Link>}
+
+        {/* 📦 ORDERS */}
+        {token && <Link to="/orders">Orders 📦</Link>}
 
         {/* 🛒 CART */}
         <Link to="/cart">

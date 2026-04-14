@@ -7,21 +7,22 @@ import Cart from "./Cart";
 import Contact from "./Contact";
 import Admin from "./Admin";
 import Login from "./Login";
+import Checkout from "./Checkout";
+import AdminOrders from "./AdminOrders";
 
 import "./App.css";
 
 function App() {
   const [cart, setCart] = useState([]);
-  const [token, setToken] = useState(null); // 🔥 state based
+  const [token, setToken] = useState(null);
 
-  // 🔐 Load token on start
   useEffect(() => {
     setToken(localStorage.getItem("token"));
   }, []);
 
   const logout = () => {
     localStorage.removeItem("token");
-    setToken(null); // 🔥 UI instantly update
+    setToken(null);
   };
 
   return (
@@ -50,7 +51,13 @@ function App() {
           {/* 🔐 ADMIN */}
           {token && <Link to="/admin">Admin</Link>}
 
-          <Link to="/cart">Cart 🛒 ({cart.length})</Link>
+          {/* 📦 ORDERS */}
+          {token && <Link to="/orders">Orders 📦</Link>}
+
+          {/* 🛒 CART */}
+          <Link to="/cart">
+            Cart 🛒 ({cart.length})
+          </Link>
 
           {/* 🔐 LOGIN / LOGOUT */}
           {token ? (
@@ -77,15 +84,25 @@ function App() {
           element={<Cart cart={cart} setCart={setCart} />}
         />
 
+        <Route
+          path="/checkout"
+          element={<Checkout cart={cart} setCart={setCart} />}
+        />
+
         <Route path="/contact" element={<Contact />} />
 
-        {/* 🔐 ADMIN PROTECTED */}
+        {/* 🔐 ADMIN */}
         <Route
           path="/admin"
           element={token ? <Admin /> : <Login />}
         />
 
-        {/* LOGIN */}
+        {/* 🔐 ORDERS (PROTECTED) */}
+        <Route
+          path="/orders"
+          element={token ? <AdminOrders /> : <Login />}
+        />
+
         <Route path="/login" element={<Login />} />
 
       </Routes>

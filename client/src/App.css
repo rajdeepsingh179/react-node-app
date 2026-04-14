@@ -305,3 +305,27 @@ h1 {
   margin: 10px 0;
   padding: 10px;
 }
+.checkout-btn {
+  background: gold;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+/* 🔥 ONLY CART IMAGE FIX */
+.cart-card img {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* 🔥 CART LAYOUT */
+.cart-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-align: left;
+}

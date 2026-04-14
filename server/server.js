@@ -16,18 +16,20 @@ mongoose.connect("mongodb://fabornas1991:Fabornas%401991@ac-no0bfxf-shard-00-00.
 // ROUTES
 const productRoutes = require("./routes/products");
 const authRoutes = require("./routes/auth");
-const contactRoutes = require("./routes/contact"); // 🔥 ADD THIS
+const contactRoutes = require("./routes/contact");
+const orderRoutes = require("./routes/orders"); // 🔥 ADD HERE
 
 app.use("/api/products", productRoutes);
 app.use("/api", authRoutes);
-app.use("/api/contact", contactRoutes); // 🔥 ADD THIS
+app.use("/api/contact", contactRoutes);
+app.use("/api/orders", orderRoutes); // 🔥 ADD HERE
 
 // TEST
 app.get("/", (req, res) => {
   res.send("Server running 🚀");
 });
 
-// START SERVER
+// START SERVER (ALWAYS LAST)
 app.listen(5000, () => {
   console.log("Server running on port 5000 🔥");
 });
