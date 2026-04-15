@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -9,7 +10,8 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 // 🔥 MongoDB Atlas
-mongoose.connect("mongodb://fabornas1991:Fabornas%401991@ac-no0bfxf-shard-00-00.1qllum3.mongodb.net:27017,ac-no0bfxf-shard-00-01.1qllum3.mongodb.net:27017,ac-no0bfxf-shard-00-02.1qllum3.mongodb.net:27017/productsdb?tls=true&replicaSet=atlas-fs9zyz-shard-0&authSource=admin&retryWrites=true&w=majority")
+// 🔥 MongoDB Atlas (from .env)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Atlas Connected ✅"))
   .catch(err => console.log("DB Error ❌:", err));
 

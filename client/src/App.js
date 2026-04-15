@@ -9,6 +9,7 @@ import Admin from "./Admin";
 import Login from "./Login";
 import Checkout from "./Checkout";
 import AdminOrders from "./AdminOrders";
+import ProtectedRoute from "./ProtectedRoute";
 
 import "./App.css";
 
@@ -17,12 +18,28 @@ function App() {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
+    const updateToken = () => {
+      setToken(localStorage.getItem("token"));
+    };
+
+    // initial load
+    updateToken();
+
+    // listen for login/logout changes
+    window.addEventListener("storage", updateToken);
+
+    return () => {
+      window.removeEventListener("storage", updateToken);
+    };
   }, []);
 
   const logout = () => {
     localStorage.removeItem("token");
-    setToken(null);
+
+    // 🔥 trigger UI update
+    window.dispatchEvent(new Event("storage"));
+
+    window.location.href = "/login";
   };
 
   return (
@@ -94,13 +111,21 @@ function App() {
         {/* 🔐 ADMIN */}
         <Route
           path="/admin"
-          element={token ? <Admin /> : <Login />}
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
         />
 
-        {/* 🔐 ORDERS (PROTECTED) */}
+        {/* 🔐 ORDERS */}
         <Route
           path="/orders"
-          element={token ? <AdminOrders /> : <Login />}
+          element={
+            <ProtectedRoute>
+              <AdminOrders />
+            </ProtectedRoute>
+          }
         />
 
         <Route path="/login" element={<Login />} />
