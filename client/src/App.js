@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./Home";
 import Products from "./Products";
@@ -10,6 +10,7 @@ import Login from "./Login";
 import Checkout from "./Checkout";
 import AdminOrders from "./AdminOrders";
 import ProtectedRoute from "./ProtectedRoute";
+import Navbar from "./Navbar"; // ✅ USE THIS (IMPORTANT)
 
 import "./App.css";
 
@@ -22,10 +23,7 @@ function App() {
       setToken(localStorage.getItem("token"));
     };
 
-    // initial load
     updateToken();
-
-    // listen for login/logout changes
     window.addEventListener("storage", updateToken);
 
     return () => {
@@ -33,58 +31,11 @@ function App() {
     };
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-
-    // 🔥 trigger UI update
-    window.dispatchEvent(new Event("storage"));
-
-    window.location.href = "/login";
-  };
-
   return (
     <Router>
 
-      {/* NAVBAR */}
-      <div className="navbar">
-
-        {/* LEFT */}
-        <div className="logo-container">
-          <div className="logo-circle">FO</div>
-
-          <h2 className="logo">
-            <Link to="/" className="logo-link">
-              FABORNAS ✨
-            </Link>
-          </h2>
-        </div>
-
-        {/* RIGHT */}
-        <div className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/products">Products</Link>
-          <Link to="/contact">Contact</Link>
-
-          {/* 🔐 ADMIN */}
-          {token && <Link to="/admin">Admin</Link>}
-
-          {/* 📦 ORDERS */}
-          {token && <Link to="/orders">Orders 📦</Link>}
-
-          {/* 🛒 CART */}
-          <Link to="/cart">
-            Cart 🛒 ({cart.length})
-          </Link>
-
-          {/* 🔐 LOGIN / LOGOUT */}
-          {token ? (
-            <button onClick={logout}>Logout 🔓</button>
-          ) : (
-            <Link to="/login">Login 🔐</Link>
-          )}
-        </div>
-
-      </div>
+      {/* ✅ ONLY THIS NAVBAR */}
+      <Navbar cart={cart} />
 
       {/* ROUTES */}
       <Routes>
@@ -108,7 +59,6 @@ function App() {
 
         <Route path="/contact" element={<Contact />} />
 
-        {/* 🔐 ADMIN */}
         <Route
           path="/admin"
           element={
@@ -118,7 +68,6 @@ function App() {
           }
         />
 
-        {/* 🔐 ORDERS */}
         <Route
           path="/orders"
           element={

@@ -1,0 +1,67 @@
+/* 🔥 SIDEBAR FINAL PERFECT */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 300px;
+  height: 100vh;
+  background: #ffffff;
+  transition: 0.4s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* OPEN */
+.sidebar.open {
+  left: 0;
+}
+
+/* HEADER */
+.sidebar-header {
+  padding: 20px 20px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* CLOSE */
+.close-btn {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* CONTENT */
+.sidebar-content {
+  padding: 0 20px;
+}
+
+/* MENU */
+.menu {
+  list-style: none;
+  padding: 20px 0;
+}
+
+.menu li {
+  margin: 15px 0;
+  font-size: 18px;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: #111;
+}
+
+/* 🔥 FOOTER (PERFECT POSITION) */
+.sidebar-footer {
+  padding: 10px 20px;
+  border-top: 1px solid #ddd;
+  margin-top: 10px; /* 👈 controlled spacing */
+}
+
+.sidebar-footer a {
+  display: block;
+  margin: 10px 0;
+  text-decoration: none;
+  color: #333;
+}

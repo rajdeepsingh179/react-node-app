@@ -1,54 +1,56 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import SearchOverlay from "./SearchOverlay";
 
 function Navbar({ cart }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const logout = () => {
     localStorage.removeItem("token");
-    window.location.reload();
+    navigate("/login");
   };
 
   return (
-    <div className="navbar">
+    <>
+      <div className="lv-navbar">
 
-      {/* LEFT */}
-      <div className="logo-container">
-        <div className="logo-circle">FO</div>
+        {/* LEFT */}
+        <div className="lv-left">
+          <button className="menu-btn" onClick={() => setIsOpen(true)}>☰</button>
+        </div>
 
-        <h2 className="logo">
-          <Link to="/" className="logo-link">
-            FABORNAS ✨
+        {/* CENTER */}
+        <div className="lv-logo">
+          <Link to="/" className="brand-text brand-md">
+            FABORNAS
           </Link>
-        </h2>
+        </div>
+
+        {/* RIGHT */}
+        <div className="lv-right">
+          <span className="nav-icon" onClick={() => setSearchOpen(true)}>🔍</span>
+
+          <span className="nav-icon" onClick={() => navigate("/cart")}>
+            🛒 {cart?.length || 0}
+          </span>
+
+          {token ? (
+            <span className="nav-icon" onClick={logout}>👤</span>
+          ) : (
+            <Link to="/login" className="nav-icon">🔐</Link>
+          )}
+        </div>
+
       </div>
 
-      {/* RIGHT */}
-      <div className="nav-links">
-        <Link to="/">Home</Link>
-        <Link to="/products">Products</Link>
-        <Link to="/contact">Contact</Link>
-
-        {/* 🔐 ADMIN */}
-        {token && <Link to="/admin">Admin</Link>}
-
-        {/* 📦 ORDERS */}
-        {token && <Link to="/orders">Orders 📦</Link>}
-
-        {/* 🛒 CART */}
-        <Link to="/cart">
-          Cart 🛒 ({cart?.length || 0})
-        </Link>
-
-        {/* 🔐 LOGIN / LOGOUT */}
-        {token ? (
-          <button onClick={logout}>Logout 🔓</button>
-        ) : (
-          <Link to="/login">Login 🔐</Link>
-        )}
-      </div>
-
-    </div>
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <SearchOverlay isOpen={searchOpen} setIsOpen={setSearchOpen} />
+    </>
   );
 }
 

@@ -15,39 +15,69 @@ function Home() {
   return (
     <div className="home">
 
-      {/* HERO */}
-      <div className="hero">
-        <h1>Welcome to Fabornas</h1>
-        <p>
-          Discover premium ornaments, handcrafted decor, and stylish collections 
-          designed to elevate your lifestyle.
-        </p>
+      {/* 🔥 HERO */}
+      <div className="hero lv-hero">
+        <div className="hero-overlay">
 
-        {/* BUTTONS */}
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          <Link to="/products">
-            <button className="shop-btn">Shop Now</button>
-          </Link>
+          <h1 className="brand-text brand-lg brand-gold">
+            FABORNAS
+          </h1>
 
-          <Link to="/contact">
-            <button className="view-btn">Contact Us</button>
-          </Link>
+          <p>
+            Discover premium ornaments, handcrafted decor, and timeless luxury collections.
+          </p>
+
+          <div className="hero-buttons">
+            <Link to="/products">
+              <button className="lv-btn">Shop Now</button>
+            </Link>
+
+            <Link to="/products">
+              <button className="lv-outline">Explore</button>
+            </Link>
+          </div>
+
         </div>
       </div>
 
-      {/* PRODUCT PREVIEW */}
+      {/* 🔥 TRUST BAR */}
+      <div className="trust-bar">
+        <p>✔ 100% Authentic</p>
+        <p>✔ Secure Payments</p>
+        <p>✔ Fast Delivery</p>
+      </div>
+
+      {/* 🔥 PRODUCT PREVIEW */}
       <div className="preview">
-        <h2>Featured Products</h2>
+
+        <div className="section-header">
+          <h2 className="brand-text brand-md">FABORNAS</h2>
+          <span className="divider"></span>
+          <p>Featured Collection</p>
+        </div>
 
         <div className="product-grid">
           {products.map((p) => (
-            <div className="card" key={p._id}>
+            <div className="card premium-card" key={p._id}>
+
+              <span className="product-dot"></span>
+
               <img 
-                src={`http://localhost:5000${p.imageUrl}`} 
+                src={
+                  p.imageUrl
+                    ? `http://localhost:5000${p.imageUrl}`
+                    : "https://via.placeholder.com/200"
+                } 
                 alt={p.name} 
               />
+
               <h3>{p.name}</h3>
-              <p>₹ {p.price}</p>
+              <p className="price">₹ {p.price}</p>
+
+              <Link to="/products">
+                <button className="quick-btn">View</button>
+              </Link>
+
             </div>
           ))}
         </div>
@@ -57,12 +87,20 @@ function Home() {
         </Link>
       </div>
 
-      {/* ABOUT */}
+      {/* 🔥 ABOUT */}
       <div className="about">
-        <h2>Why Fabornas?</h2>
+        <h2 className="brand-text brand-md">FABORNAS</h2>
         <p>
           We bring you handpicked products with a focus on quality, style, and affordability.
         </p>
+      </div>
+
+      {/* 🔥 CTA */}
+      <div className="cta">
+        <h2 className="brand-text brand-md">FABORNAS</h2>
+        <Link to="/products">
+          <button className="cta-btn">Explore Now</button>
+        </Link>
       </div>
 
     </div>

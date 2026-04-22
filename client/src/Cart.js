@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "./App.css";
 
 function Cart({ cart, setCart }) {
 
@@ -34,56 +35,74 @@ function Cart({ cart, setCart }) {
 
   return (
     <div className="container">
-      <h1>Cart 🛒</h1>
+
+      {/* 🔥 HEADER */}
+      <div className="section-header">
+        <p className="section-sub">Your Cart</p>
+        <span className="divider"></span>
+      </div>
 
       {cart.length === 0 ? (
-        <p>Your cart is empty 😢</p>
+        <div className="empty-cart">
+          <p>Your cart is empty 😢</p>
+          <Link to="/products">
+            <button>Continue Shopping</button>
+          </Link>
+        </div>
       ) : (
         <>
-          {cart.map((item, i) => (
-            <div key={i} className="card cart-card">
+          <div className="cart-grid">
 
-              {/* 🔥 IMAGE FIX */}
-              <img
-                src={
-                  item.imageUrl
-                    ? `http://localhost:5000${item.imageUrl}`
-                    : "https://via.placeholder.com/100"
-                }
-                alt={item.name}
-                className="cart-img"
-              />
+            {cart.map((item, i) => (
+              <div key={i} className="card cart-card">
 
-              <div>
-                <h3>{item.name}</h3>
-                <p>₹{item.price}</p>
+                {/* IMAGE */}
+                <img
+                  src={
+                    item.imageUrl
+                      ? `http://localhost:5000${item.imageUrl}`
+                      : "https://via.placeholder.com/120"
+                  }
+                  alt={item.name}
+                  className="cart-img"
+                />
 
-                {/* 🔥 QTY CONTROLS */}
-                <div>
-                  <button onClick={() => decreaseQty(i)}>➖</button>
+                {/* DETAILS */}
+                <div className="cart-info">
+                  <h3>{item.name}</h3>
+                  <p className="price">₹{item.price}</p>
 
-                  <span style={{ margin: "0 10px" }}>
-                    {item.qty || 1}
-                  </span>
+                  {/* QTY */}
+                  <div className="qty-box">
+                    <button onClick={() => decreaseQty(i)}>−</button>
+                    <span>{item.qty || 1}</span>
+                    <button onClick={() => increaseQty(i)}>+</button>
+                  </div>
 
-                  <button onClick={() => increaseQty(i)}>➕</button>
+                  {/* REMOVE */}
+                  <button
+                    className="remove-btn"
+                    onClick={() => removeFromCart(i)}
+                  >
+                    Remove
+                  </button>
                 </div>
 
-                <button onClick={() => removeFromCart(i)}>
-                  Remove ❌
-                </button>
               </div>
+            ))}
 
-            </div>
-          ))}
+          </div>
 
-          <h2>Total: ₹{total}</h2>
+          {/* 🔥 SUMMARY */}
+          <div className="cart-summary">
+            <h2>Total: ₹{total}</h2>
 
-          <Link to="/checkout">
-            <button className="checkout-btn">
-              Proceed to Checkout 🧾
-            </button>
-          </Link>
+            <Link to="/checkout">
+              <button className="checkout-btn">
+                Proceed to Checkout
+              </button>
+            </Link>
+          </div>
         </>
       )}
     </div>

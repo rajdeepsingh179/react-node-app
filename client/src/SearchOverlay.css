@@ -1,0 +1,39 @@
+/* 🔥 FULL SCREEN SEARCH */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+}
+
+.search-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* HEADER */
+.search-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 30px;
+  font-size: 18px;
+}
+
+/* INPUT BOX */
+.search-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+.search-box input {
+  width: 60%;
+  padding: 15px;
+  font-size: 20px;
+  border: none;
+  border-bottom: 2px solid black;
+  outline: none;
+}
