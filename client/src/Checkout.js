@@ -17,27 +17,31 @@ function Checkout({ cart, setCart }) {
     }
 
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch("http://localhost:5000/api/orders", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify({
           items: cart,
           total,
           customerName: name,
-          address
-        })
+          address,
+        }),
       });
 
       const data = await res.json();
+      console.log("ORDER RESPONSE:", data);
 
-      if (data.success) {
+      if (res.ok && data.success) {
         alert("Order placed 🎉");
         setCart([]);
         window.location.href = "/";
       } else {
-        alert("Order failed ❌");
+        alert(data.message || "Order failed ❌");
       }
 
     } catch (err) {
@@ -49,7 +53,6 @@ function Checkout({ cart, setCart }) {
   return (
     <div className="container">
 
-      {/* 🔥 HEADER */}
       <div className="section-header">
         <p className="section-sub">Secure Checkout</p>
         <span className="divider"></span>
@@ -62,7 +65,6 @@ function Checkout({ cart, setCart }) {
       ) : (
         <div className="checkout-layout">
 
-          {/* 🔥 LEFT FORM */}
           <div className="checkout-form card">
             <h3>Shipping Details</h3>
 
@@ -83,7 +85,6 @@ function Checkout({ cart, setCart }) {
             </button>
           </div>
 
-          {/* 🔥 RIGHT SUMMARY */}
           <div className="checkout-summary card">
             <h3>Order Summary</h3>
 

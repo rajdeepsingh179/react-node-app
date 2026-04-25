@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 
-const verifyAdmin = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
+  // ❌ No token
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "No token ❌" });
   }
@@ -11,18 +12,12 @@ const verifyAdmin = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, "secretkey"); // 🔥 SAME SECRET
-
-    if (!decoded.isAdmin) {
-      return res.status(403).json({ message: "Not admin ❌" });
-    }
-
     req.user = decoded;
     next();
-
   } catch (err) {
-    console.log("ADMIN TOKEN ERROR:", err);
+    console.log("TOKEN ERROR:", err);
     return res.status(401).json({ message: "Invalid token ❌" });
   }
 };
 
-module.exports = verifyAdmin;
+module.exports = verifyToken;

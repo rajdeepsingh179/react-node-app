@@ -6,7 +6,9 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const login = async () => {
+  const login = async (e) => {
+    e.preventDefault();
+
     if (!email || !password) {
       alert("Please enter email & password ❗");
       return;
@@ -21,35 +23,19 @@ function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      const text = await res.text();
-      let data;
-
-      try {
-        data = JSON.parse(text);
-      } catch {
-        console.error("Non-JSON response:", text);
-        alert("Server error ❌");
-        return;
-      }
+      const data = await res.json();
+      console.log("LOGIN RESPONSE:", data);
 
       if (res.ok && data.token) {
-        // ✅ Save token
         localStorage.setItem("token", data.token);
-
-        // 🔥 IMPORTANT: trigger App.js update
-        window.dispatchEvent(new Event("storage"));
-
         alert("Login Success ✅");
-
-        // ✅ React navigation (no reload)
         navigate("/admin");
-
       } else {
         alert(data.message || "Login Failed ❌");
       }
 
     } catch (err) {
-      console.log(err);
+      console.log("LOGIN ERROR:", err);
       alert("Server Error ❌");
     }
   };
@@ -58,21 +44,23 @@ function Login() {
     <div className="login-box">
       <h2>Admin Login 🔐</h2>
 
-      <input
-        type="email"
-        placeholder="Enter email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <form onSubmit={login}>
+        <input
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <input
-        type="password"
-        placeholder="Enter password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <button onClick={login}>Login</button>
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 }
