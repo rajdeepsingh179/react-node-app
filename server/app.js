@@ -1,3 +1,4 @@
+const searchRoutes = require("./routes/search"); // ✅ already present
 require("dotenv").config({ path: "./.env" });
 
 const express = require("express");
@@ -33,8 +34,9 @@ const Contact = mongoose.model("Contact", contactSchema);
 
 /* ROUTES */
 app.use("/api/products", productRoutes);
-app.use("/api", authRoutes);       // 👉 /api/login
+app.use("/api", authRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/search", searchRoutes); // ✅ 🔥 THIS WAS MISSING
 
 // TEST
 app.get("/", (req, res) => {
@@ -62,9 +64,9 @@ app.get("/api/contact", async (req, res) => {
   }
 });
 
-/* 🔥 CONNECT DB (FINAL FIX) */
+/* 🔥 CONNECT DB */
 mongoose
-  .connect(process.env.MONGO_URI) // ✅ NO OPTIONS
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB connected");
 

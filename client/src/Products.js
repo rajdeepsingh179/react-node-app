@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // 🔥 ADD
 import "./App.css";
 
 function Products({ cart, setCart }) {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+
+  const location = useLocation(); // 🔥 ADD
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -21,6 +24,16 @@ function Products({ cart, setCart }) {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // 🔥 NAVBAR SEARCH CONNECT
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get("search");
+
+    if (query) {
+      setSearch(query);
+    }
+  }, [location.search]);
 
   const fetchProducts = () => {
     fetch("http://localhost:5000/api/products")
@@ -80,7 +93,7 @@ function Products({ cart, setCart }) {
     if (data.success) fetchProducts();
   };
 
-  /* 🔥 UPDATED CART LOGIC (NO DUPLICATES) */
+  // 🔥 CART LOGIC
   const addToCart = (item) => {
     const exist = cart.find(p => p._id === item._id);
 
@@ -95,6 +108,7 @@ function Products({ cart, setCart }) {
     }
   };
 
+  // 🔥 FILTER
   const filteredProducts = products.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()) &&
     (category === "All" || item.category === category)
@@ -103,13 +117,12 @@ function Products({ cart, setCart }) {
   return (
     <div className="container">
 
-      {/* 🔥 HEADER */}
       <div className="section-header">
         <p className="section-sub">Curated Collections</p>
         <span className="divider"></span>
       </div>
 
-      {/* 🔥 FILTER */}
+      {/* 🔥 FILTER BAR */}
       <div className="filter-bar">
         <input
           className="search-input"
@@ -129,7 +142,7 @@ function Products({ cart, setCart }) {
         </select>
       </div>
 
-      {/* 🔥 ADMIN */}
+      {/* ADMIN */}
       {getToken() && (
         <div className="form">
           <input name="name" placeholder="Name" onChange={handleChange} />
@@ -141,7 +154,7 @@ function Products({ cart, setCart }) {
         </div>
       )}
 
-      {/* 🔥 PRODUCTS */}
+      {/* PRODUCTS */}
       <div className="grid">
         {filteredProducts.map((item) => (
           <div key={item._id} className="card premium-product">

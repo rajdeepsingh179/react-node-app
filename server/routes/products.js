@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
-const verifyAdmin = require("../middleware/admin"); // 🔐
+const verifyAdmin = require("../middleware/admin");
+const Product = require("../models/Product"); // ✅ ONLY IMPORT
 
 // STORAGE
 const storage = multer.diskStorage({
@@ -14,18 +14,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-// SCHEMA
-const ProductSchema = new mongoose.Schema({
-  name: String,
-  category: String,
-  description: String,
-  imageUrl: String,
-  price: Number,
-  stock: Number
-});
-
-const Product = mongoose.model("Product", ProductSchema);
 
 // 🔐 ADD PRODUCT (ADMIN ONLY)
 router.post("/", verifyAdmin, upload.single("image"), async (req, res) => {
@@ -48,7 +36,7 @@ router.post("/", verifyAdmin, upload.single("image"), async (req, res) => {
   }
 });
 
-// 📦 GET PRODUCTS (PUBLIC)
+// 📦 GET PRODUCTS
 router.get("/", async (req, res) => {
   try {
     const products = await Product.find();
@@ -58,7 +46,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 🔐 DELETE PRODUCT (ADMIN ONLY)
+// 🔐 DELETE PRODUCT
 router.delete("/:id", verifyAdmin, async (req, res) => {
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);
