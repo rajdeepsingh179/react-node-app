@@ -6,7 +6,6 @@ import SearchOverlay from "./SearchOverlay";
 function Navbar({ cart }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-
   const [token, setToken] = useState(localStorage.getItem("token"));
 
   const navigate = useNavigate();
@@ -18,8 +17,6 @@ function Navbar({ cart }) {
     };
 
     window.addEventListener("storage", checkToken);
-
-    // 🔥 also run once
     checkToken();
 
     return () => window.removeEventListener("storage", checkToken);
@@ -27,7 +24,7 @@ function Navbar({ cart }) {
 
   const logout = () => {
     localStorage.removeItem("token");
-    setToken(null); // 🔥 immediate update
+    setToken(null);
     navigate("/login");
   };
 
@@ -50,19 +47,57 @@ function Navbar({ cart }) {
         {/* RIGHT */}
         <div className="lv-right">
 
-          <span className="nav-icon" onClick={() => setSearchOpen(true)}>🔍</span>
+          {/* 🔍 Search */}
+          <span
+            className="nav-icon"
+            title="Search"
+            onClick={() => setSearchOpen(true)}
+          >
+            🔍
+          </span>
 
-          <span className="nav-icon" onClick={() => navigate("/cart")}>
+          {/* 🛒 Cart */}
+          <span
+            className="nav-icon"
+            title="Cart"
+            onClick={() => navigate("/cart")}
+          >
             🛒 {cart?.length || 0}
           </span>
 
           {token ? (
             <>
-              <span className="nav-icon" onClick={() => navigate("/orders")}>📦</span>
-              <span className="nav-icon" onClick={logout}>🚪</span>
+              {/* 📊 Dashboard */}
+              <span
+                className="nav-icon"
+                title="Dashboard"
+                onClick={() => navigate("/admin")}
+              >
+                📊
+              </span>
+
+              {/* 📦 Orders */}
+              <span
+                className="nav-icon"
+                title="Orders"
+                onClick={() => navigate("/admin/orders")}
+              >
+                📦
+              </span>
+
+              {/* 🚪 Logout */}
+              <span
+                className="nav-icon"
+                title="Logout"
+                onClick={logout}
+              >
+                🚪
+              </span>
             </>
           ) : (
-            <Link to="/login" className="nav-icon">🔐</Link>
+            <Link to="/login" className="nav-icon" title="Login">
+              🔐
+            </Link>
           )}
 
         </div>

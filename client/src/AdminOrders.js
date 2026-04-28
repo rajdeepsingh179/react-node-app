@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
+import "./AdminOrders.css";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("All");
   const [search, setSearch] = useState("");
-  const [dateFilter, setDateFilter] = useState("All");
-  const [lastCount, setLastCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
+
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
     fetchOrders();
-
-    // 🔥 auto refresh every 5 sec
-    const interval = setInterval(fetchOrders, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const fetchOrders = () => {
     const token = localStorage.getItem("token");
+
+    setLoading(true);
 
     fetch("http://localhost:5000/api/orders", {
       headers: {
@@ -27,29 +30,20 @@ function AdminOrders() {
       .then(data => {
         let newOrders = [];
 
-        if (Array.isArray(data)) {
-          newOrders = data;
-        } else if (data.orders) {
-          newOrders = data.orders;
-        }
+        if (Array.isArray(data)) newOrders = data;
+        else if (data.orders) newOrders = data.orders;
+        else if (data.data) newOrders = data.data;
 
-        // 🔔 NEW ORDER NOTIFICATION
-        if (lastCount !== 0 && newOrders.length > lastCount) {
-          alert("New Order Received 🛒");
+        const sorted = [...newOrders].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
 
-          const audio = new Audio(
-            "https://www.soundjay.com/buttons/sounds/button-3.mp3"
-          );
-          audio.play();
-        }
-
-        setLastCount(newOrders.length);
-        setOrders(newOrders);
+        setOrders(sorted);
+        setLoading(false);
       })
-      .catch(err => console.log("ORDER ERROR:", err));
+      .catch(() => setLoading(false));
   };
 
-  // 🔥 UPDATE STATUS
   const updateStatus = async (id, status) => {
     const token = localStorage.getItem("token");
 
@@ -65,96 +59,48 @@ function AdminOrders() {
     fetchOrders();
   };
 
-  // 📥 EXPORT CSV
-  const exportCSV = () => {
-    const rows = [["Name", "Address", "Total", "Status"]];
-
-    orders.forEach(o => {
-      rows.push([o.customerName, o.address, o.total, o.status]);
-    });
-
-    const csv =
-      "data:text/csv;charset=utf-8," +
-      rows.map(r => r.join(",")).join("\n");
-
-    const link = document.createElement("a");
-    link.href = encodeURI(csv);
-    link.download = "orders.csv";
-    link.click();
-  };
-
-  // 🎨 STATUS COLOR
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Pending":
-        return "#f0ad4e";
-      case "Accepted":
-        return "#28a745";
-      case "Processing":
-        return "#5bc0de";
-      case "Shipped":
-        return "#0275d8";
-      case "Delivered":
-        return "#5cb85c";
-      case "Cancelled":
-        return "#d9534f";
-      default:
-        return "#999";
-    }
-  };
-
-  // 🔍 FILTER LOGIC
-  const filteredOrders = orders.filter(order => {
+  // 🔍 FILTER
+  const filtered = orders.filter(o => {
     const matchStatus =
-      statusFilter === "All" || order.status === statusFilter;
+      statusFilter === "All" || o.status === statusFilter;
 
     const matchSearch =
-      order.customerName
-        ?.toLowerCase()
-        .includes(search.toLowerCase());
+      o.customerName?.toLowerCase().includes(search.toLowerCase());
 
-    let matchDate = true;
-
-    if (dateFilter !== "All") {
-      const orderDate = new Date(order.createdAt);
-      const now = new Date();
-
-      if (dateFilter === "Today") {
-        matchDate = orderDate.toDateString() === now.toDateString();
-      }
-
-      if (dateFilter === "Week") {
-        const diff = (now - orderDate) / (1000 * 60 * 60 * 24);
-        matchDate = diff <= 7;
-      }
-
-      if (dateFilter === "Month") {
-        matchDate =
-          orderDate.getMonth() === now.getMonth() &&
-          orderDate.getFullYear() === now.getFullYear();
-      }
-    }
-
-    return matchStatus && matchSearch && matchDate;
+    return matchStatus && matchSearch;
   });
 
-  return (
-    <div className="container">
-      <h1>Orders 📦</h1>
+  // 🔥 PAGINATION
+  const indexOfLast = currentPage * ordersPerPage;
+  const currentOrders = filtered.slice(
+    indexOfLast - ordersPerPage,
+    indexOfLast
+  );
+  const totalPages = Math.ceil(filtered.length / ordersPerPage);
 
-      {/* 🔥 FILTER BAR */}
+  return (
+    <div className="orders-container">
+      <h2>Orders Management 📦</h2>
+
+      {/* 🔥 FILTER */}
       <div className="filter-bar">
         <input
           placeholder="Search by name..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
         />
 
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setCurrentPage(1);
+          }}
         >
-          <option value="All">All Status</option>
+          <option value="All">All</option>
           <option>Pending</option>
           <option>Accepted</option>
           <option>Processing</option>
@@ -162,94 +108,137 @@ function AdminOrders() {
           <option>Delivered</option>
           <option>Cancelled</option>
         </select>
-
-        <select
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-        >
-          <option value="All">All Time</option>
-          <option value="Today">Today</option>
-          <option value="Week">This Week</option>
-          <option value="Month">This Month</option>
-        </select>
-
-        <button onClick={exportCSV}>Export CSV 📥</button>
       </div>
 
-      {filteredOrders.length === 0 ? (
-        <p>No orders found ❌</p>
-      ) : (
-        filteredOrders.map((order) => (
-          <div key={order._id} className="card">
+      {/* 🔥 TABLE */}
+      <table className="orders-table">
+        <thead>
+          <tr>
+            <th>👤 Customer</th>
+            <th>💰 Total</th>
+            <th>📦 Status</th>
+            <th>📅 Date</th>
+            <th>⚙ Action</th>
+          </tr>
+        </thead>
 
-            <h3>{order.customerName}</h3>
-            <p><b>Address:</b> {order.address}</p>
-            <p><b>Total:</b> ₹{order.total}</p>
+        <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan="5">Loading...</td>
+            </tr>
+          ) : currentOrders.length === 0 ? (
+            <tr>
+              <td colSpan="5">No Orders ❌</td>
+            </tr>
+          ) : (
+            currentOrders.map(order => (
+              <tr key={order._id}>
+                <td>{order.customerName}</td>
+                <td>₹{order.total}</td>
 
-            {/* STATUS */}
-            <p>
-              <b>Status:</b>{" "}
-              <span
-                style={{
-                  background: getStatusColor(order.status || "Pending"),
-                  color: "#fff",
-                  padding: "4px 10px",
-                  borderRadius: "20px",
-                  fontSize: "12px",
-                }}
-              >
-                {order.status || "Pending"}
-              </span>
-            </p>
+                {/* 🔥 STATUS BADGE */}
+                <td>
+                  <span className={`status ${order.status || "Pending"}`}>
+                    {order.status || "Pending"}
+                  </span>
+                </td>
 
-            {/* DATE */}
-            <p style={{ fontSize: "12px", color: "#777" }}>
-              {new Date(order.createdAt).toLocaleDateString()}
-            </p>
+                {/* 🔥 DATE FORMAT */}
+                <td>
+                  {new Date(order.createdAt).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                  })}
+                </td>
 
-            {/* ACTIONS */}
-            <div style={{ marginTop: "10px" }}>
-
-              {order.status === "Pending" && (
-                <>
+                <td>
+                  {/* 🔥 VIEW BUTTON */}
                   <button
-                    onClick={() => updateStatus(order._id, "Accepted")}
-                    style={{ marginRight: "10px", background: "#5cb85c" }}
+                    style={{ marginRight: "10px" }}
+                    onClick={() => setSelectedOrder(order)}
                   >
-                    Accept
+                    View
                   </button>
 
-                  <button
-                    onClick={() => updateStatus(order._id, "Cancelled")}
-                    style={{ background: "#d9534f" }}
+                  {/* 🔥 STATUS UPDATE */}
+                  <select
+                    value={order.status || "Pending"}
+                    onChange={(e) =>
+                      updateStatus(order._id, e.target.value)
+                    }
                   >
-                    Cancel
-                  </button>
-                </>
-              )}
+                    <option>Pending</option>
+                    <option>Accepted</option>
+                    <option>Processing</option>
+                    <option>Shipped</option>
+                    <option>Delivered</option>
+                    <option>Cancelled</option>
+                  </select>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
 
-              {order.status === "Accepted" && (
-                <button onClick={() => updateStatus(order._id, "Processing")}>
-                  Start Processing
-                </button>
-              )}
+      {/* 🔥 PAGINATION */}
+      <div className="pagination">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(p => p - 1)}
+        >
+          Prev
+        </button>
 
-              {order.status === "Processing" && (
-                <button onClick={() => updateStatus(order._id, "Shipped")}>
-                  Mark Shipped
-                </button>
-              )}
+        <span>
+          {currentPage} / {totalPages || 1}
+        </span>
 
-              {order.status === "Shipped" && (
-                <button onClick={() => updateStatus(order._id, "Delivered")}>
-                  Delivered
-                </button>
-              )}
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(p => p + 1)}
+        >
+          Next
+        </button>
+      </div>
 
-            </div>
+      {/* 🔥 MODAL */}
+      {selectedOrder && (
+        <div
+          className="modal-overlay"
+          onClick={() => setSelectedOrder(null)}
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Order Details</h3>
 
+            <p><b>Name:</b> {selectedOrder.customerName}</p>
+            <p><b>Address:</b> {selectedOrder.address}</p>
+            <p><b>Total:</b> ₹{selectedOrder.total}</p>
+
+            <h4>Items:</h4>
+
+            {selectedOrder.items?.length > 0 ? (
+              <ul>
+                {selectedOrder.items.map((item, i) => (
+                  <li key={i}>
+                    {item.name} × {item.qty}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No items found</p>
+            )}
+
+            <button onClick={() => setSelectedOrder(null)}>
+              Close
+            </button>
           </div>
-        ))
+        </div>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import AdminDashboard from "./AdminDashboard";
 import Home from "./Home";
 import Products from "./Products";
 import Cart from "./Cart";
@@ -10,7 +11,7 @@ import Login from "./Login";
 import Checkout from "./Checkout";
 import AdminOrders from "./AdminOrders";
 import ProtectedRoute from "./ProtectedRoute";
-import Navbar from "./Navbar"; // ✅ USE THIS (IMPORTANT)
+import Navbar from "./Navbar";
 
 import "./App.css";
 
@@ -34,13 +35,41 @@ function App() {
   return (
     <Router>
 
-      {/* ✅ ONLY THIS NAVBAR */}
       <Navbar cart={cart} />
 
-      {/* ROUTES */}
       <Routes>
 
         <Route path="/" element={<Home />} />
+
+        {/* 🔥 ADMIN DASHBOARD */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🔥 ADMIN PRODUCTS PANEL */}
+        <Route
+          path="/admin/products"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🔥 ADMIN ORDERS PANEL */}
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute>
+              <AdminOrders />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/products"
@@ -58,24 +87,6 @@ function App() {
         />
 
         <Route path="/contact" element={<Contact />} />
-
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <Admin />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute>
-              <AdminOrders />
-            </ProtectedRoute>
-          }
-        />
 
         <Route path="/login" element={<Login />} />
 
