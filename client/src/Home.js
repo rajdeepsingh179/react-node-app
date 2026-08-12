@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { API_BASE_URL, getImageUrl } from "./config";
+import { API_BASE_URL } from "./config";
 import "./Home.css";
 
 function Home() {
@@ -8,9 +8,9 @@ function Home() {
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products`)
-      .then(res => res.json())
-      .then(data => setProducts(data.slice(0, 4)))
-      .catch(err => console.log(err));
+      .then((res) => res.json())
+      .then((data) => setProducts(data.slice(0, 4)))
+      .catch((err) => console.log(err));
   }, []);
 
   return (
@@ -63,13 +63,13 @@ function Home() {
 
               <span className="product-dot"></span>
 
-              <img 
+              <img
                 src={
                   p.imageUrl
                     ? `http://localhost:5000${p.imageUrl}`
                     : "https://via.placeholder.com/200"
-                } 
-                alt={p.name} 
+                }
+                alt={p.name}
               />
 
               <h3>{p.name}</h3>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import AdminDashboard from "./AdminDashboard";
@@ -17,28 +17,12 @@ import "./App.css";
 
 function App() {
   const [cart, setCart] = useState([]);
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    const updateToken = () => {
-      setToken(localStorage.getItem("token"));
-    };
-
-    updateToken();
-    window.addEventListener("storage", updateToken);
-
-    return () => {
-      window.removeEventListener("storage", updateToken);
-    };
-  }, []);
 
   return (
     <Router>
-
       <Navbar cart={cart} />
 
       <Routes>
-
         <Route path="/" element={<Home />} />
 
         {/* 🔥 ADMIN DASHBOARD */}
@@ -89,9 +73,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
 
         <Route path="/login" element={<Login />} />
-
       </Routes>
-
     </Router>
   );
 }

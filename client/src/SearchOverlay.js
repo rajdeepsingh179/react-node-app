@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL, getImageUrl } from "./config";
 import "./SearchOverlay.css";
@@ -14,15 +14,17 @@ function SearchOverlay({ isOpen, setIsOpen }) {
 
   useEffect(() => {
     if (isOpen) {
-      const saved = JSON.parse(localStorage.getItem("recentSearches")) || [];
+      const saved =
+        JSON.parse(localStorage.getItem("recentSearches")) || [];
       setRecent(saved);
     }
   }, [isOpen]);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products`)
-      .then(res => res.json())
-      .then(data => setProducts(data));
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
@@ -40,27 +42,36 @@ function SearchOverlay({ isOpen, setIsOpen }) {
     }
 
     fetch(`${API_BASE_URL}/api/search?q=${debouncedQuery}`)
-      .then(res => res.json())
-      .then(data => setSuggestions(data))
+      .then((res) => res.json())
+      .then((data) => setSuggestions(data))
       .catch(() => {
         const filtered = products
-          .filter(p =>
-            p.name.toLowerCase().includes(debouncedQuery.toLowerCase())
+          .filter((p) =>
+            p.name
+              .toLowerCase()
+              .includes(debouncedQuery.toLowerCase())
           )
           .slice(0, 6);
 
         setSuggestions(filtered);
       });
-
   }, [debouncedQuery, products]);
 
   const trending = products.slice(0, 5);
 
   const saveRecent = (value) => {
-    let updated = [value, ...recent.filter(item => item !== value)];
+    let updated = [
+      value,
+      ...recent.filter((item) => item !== value),
+    ];
+
     updated = updated.slice(0, 5);
 
-    localStorage.setItem("recentSearches", JSON.stringify(updated));
+    localStorage.setItem(
+      "recentSearches",
+      JSON.stringify(updated)
+    );
+
     setRecent(updated);
   };
 
@@ -68,6 +79,12 @@ function SearchOverlay({ isOpen, setIsOpen }) {
     localStorage.removeItem("recentSearches");
     setRecent([]);
   };
+
+  const closeAll = useCallback(() => {
+    setIsOpen(false);
+    setQuery("");
+    setSuggestions([]);
+  }, [setIsOpen]);
 
   const handleSearch = (e) => {
     if (e.key === "Enter" && query.trim()) {
@@ -84,36 +101,42 @@ function SearchOverlay({ isOpen, setIsOpen }) {
     closeAll();
   };
 
-  // 🔥 close
-  const closeAll = () => {
-    setIsOpen(false);
-    setQuery("");
-    setSuggestions([]);
-  };
-
   // 🔥 ESC
   useEffect(() => {
     const handleEsc = (e) => {
-      if (e.key === "Escape") closeAll();
+      if (e.key === "Escape") {
+        closeAll();
+      }
     };
 
     document.addEventListener("keydown", handleEsc);
-    return () => document.removeEventListener("keydown", handleEsc);
-  }, []);
+
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [closeAll]);
 
   return (
-    <div className={`search-overlay ${isOpen ? "show" : ""}`} onClick={closeAll}>
-      <div className="search-container" onClick={(e) => e.stopPropagation()}>
-
+    <div
+      className={`search-overlay ${isOpen ? "show" : ""}`}
+      onClick={closeAll}
+    >
+      <div
+        className="search-container"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* HEADER */}
         <div className="search-header">
           <span>Search</span>
-          <span className="close-btn" onClick={closeAll}>✕</span>
+          <span className="close-btn" onClick={closeAll}>
+            ✕
+          </span>
         </div>
 
         {/* INPUT */}
         <div className="search-box">
           <span className="icon">🔍</span>
+
           <input
             type="text"
             placeholder="Search products..."
@@ -127,15 +150,34 @@ function SearchOverlay({ isOpen, setIsOpen }) {
         {/* 🔁 RECENT + CLEAR */}
         {query.trim() === "" && recent.length > 0 && (
           <div className="suggestions-box">
-            <div style={{display:"flex", justifyContent:"space-between", padding:"10px"}}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "10px",
+              }}
+            >
               <strong>Recent</strong>
-              <button onClick={clearRecent} style={{border:"none", background:"none", cursor:"pointer", color:"red"}}>
+
+              <button
+                onClick={clearRecent}
+                style={{
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  color: "red",
+                }}
+              >
                 Clear
               </button>
             </div>
 
             {recent.map((item, index) => (
-              <div key={index} className="suggestion-item" onClick={() => handleClick(item)}>
+              <div
+                key={index}
+                className="suggestion-item"
+                onClick={() => handleClick(item)}
+              >
                 🔁 {item}
               </div>
             ))}
@@ -145,15 +187,30 @@ function SearchOverlay({ isOpen, setIsOpen }) {
         {/* 🔥 TRENDING */}
         {query.trim() === "" && trending.length > 0 && (
           <div className="suggestions-box">
-            <div style={{ padding: "10px", fontWeight: "bold" }}>
+            <div
+              style={{
+                padding: "10px",
+                fontWeight: "bold",
+              }}
+            >
               🔥 Trending
             </div>
 
             {trending.map((item) => (
-              <div key={item._id} className="suggestion-item" onClick={() => handleClick(item.name)}>
+              <div
+                key={item._id}
+                className="suggestion-item"
+                onClick={() => handleClick(item.name)}
+              >
                 {item.image && (
-                  <img src={getImageUrl(item.imageUrl || item.image)} alt={item.name}/>
+                  <img
+                    src={getImageUrl(
+                      item.imageUrl || item.image
+                    )}
+                    alt={item.name}
+                  />
                 )}
+
                 <div>
                   <p>{item.name}</p>
                   <span>₹{item.price}</span>
@@ -167,10 +224,20 @@ function SearchOverlay({ isOpen, setIsOpen }) {
         {suggestions.length > 0 && (
           <div className="suggestions-box">
             {suggestions.map((item) => (
-              <div key={item._id} className="suggestion-item" onClick={() => handleClick(item.name)}>
+              <div
+                key={item._id}
+                className="suggestion-item"
+                onClick={() => handleClick(item.name)}
+              >
                 {item.image && (
-                  <img src={getImageUrl(item.imageUrl || item.image)} alt={item.name}/>
+                  <img
+                    src={getImageUrl(
+                      item.imageUrl || item.image
+                    )}
+                    alt={item.name}
+                  />
                 )}
+
                 <div>
                   <p>{item.name}</p>
                   <span>₹{item.price}</span>
@@ -183,7 +250,10 @@ function SearchOverlay({ isOpen, setIsOpen }) {
         {/* ❌ NO RESULT */}
         {debouncedQuery && suggestions.length === 0 && (
           <div className="suggestions-box">
-            <div className="suggestion-item" style={{ justifyContent: "center" }}>
+            <div
+              className="suggestion-item"
+              style={{ justifyContent: "center" }}
+            >
               ❌ No products found
             </div>
           </div>
