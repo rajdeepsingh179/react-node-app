@@ -1,42 +1,38 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "./api";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const login = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     if (!email || !password) {
-      alert("Please enter email & password ❗");
+      setError("Please enter email & password");
+      setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      console.log("LOGIN RESPONSE:", data);
-
-      if (res.ok && data.token) {
-        localStorage.setItem("token", data.token);
-        alert("Login Success ✅");
+      const response = await api.post("/api/login", { email, password });
+      
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        setLoading(false);
         navigate("/admin");
-      } else {
-        alert(data.message || "Login Failed ❌");
       }
-
     } catch (err) {
+      setLoading(false);
+      const message = err.response?.data?.message || "Login failed. Please try again.";
+      setError(message);
       console.log("LOGIN ERROR:", err);
-      alert("Server Error ❌");
     }
   };
 
@@ -45,11 +41,14 @@ function Login() {
       <h2>Admin Login 🔐</h2>
 
       <form onSubmit={login}>
+        {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+        
         <input
           type="email"
           placeholder="Enter email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
         />
 
         <input
@@ -57,9 +56,12 @@ function Login() {
           placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
       </form>
     </div>
   );

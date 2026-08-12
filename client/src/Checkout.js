@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from "./config";
 import "./App.css";
 
 function Checkout({ cart, setCart }) {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const total = cart.reduce(
     (sum, item) => sum + Number(item.price) * (item.qty || 1),
@@ -12,14 +14,16 @@ function Checkout({ cart, setCart }) {
 
   const placeOrder = async () => {
     if (!name || !address) {
-      alert("Please fill all details ❗");
+      alert("Please fill all details");
       return;
     }
+
+    setLoading(true);
 
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/orders", {
+      const res = await fetch(`${API_BASE_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,12 +45,14 @@ function Checkout({ cart, setCart }) {
         setCart([]);
         window.location.href = "/";
       } else {
-        alert(data.message || "Order failed ❌");
+        alert(data.message || "Order failed");
       }
 
     } catch (err) {
       console.log(err);
-      alert("Server Error ❌");
+      alert("Server Error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,12 +77,15 @@ function Checkout({ cart, setCart }) {
             <input
               className="input"
               placeholder="Full Name"
+              value={name}
               onChange={(e) => setName(e.target.value)}
+              disabled={loading}
             />
 
             <input
               className="input"
               placeholder="Address"
+              value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
 

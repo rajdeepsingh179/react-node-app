@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from "./config";
 import "./Contact.css";
 
 function Contact() {
@@ -7,6 +8,8 @@ function Contact() {
     email: "",
     message: ""
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,10 +17,11 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("SUBMIT CLICKED"); // 🔥 debug
+    setError("");
+    setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/contact", {
+      const res = await fetch(`${API_BASE_URL}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -25,21 +29,20 @@ function Contact() {
         body: JSON.stringify(form)
       });
 
-      console.log("RESPONSE:", res); // 🔥 debug
-
       const data = await res.json();
-      console.log("DATA:", data);
 
       if (data.success) {
         alert("Message sent successfully ✅");
         setForm({ name: "", email: "", message: "" });
       } else {
-        alert("Error sending message ❌");
+        setError(data.message || "Error sending message");
       }
 
     } catch (err) {
       console.log("ERROR:", err);
-      alert("Server error ❌");
+      setError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,12 +51,16 @@ function Contact() {
       <h1>Contact Us</h1>
 
       <form onSubmit={handleSubmit} className="contact-form">
+        {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+        
         <input
           type="text"
           name="name"
           placeholder="Your Name"
           value={form.name}
           onChange={handleChange}
+          disabled={loading}
+          required
         />
 
         <input
@@ -62,6 +69,8 @@ function Contact() {
           placeholder="Your Email"
           value={form.email}
           onChange={handleChange}
+          disabled={loading}
+          required
         />
 
         <textarea

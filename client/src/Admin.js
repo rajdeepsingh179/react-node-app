@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "./config";
 
 function Admin() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/contact")
+    fetch(`${API_BASE_URL}/api/contact`)
       .then((res) => res.json())
       .then((data) => setMessages(data))
       .catch((err) => console.log(err));
@@ -19,7 +20,7 @@ function Admin() {
       ) : (
         messages.map((msg, index) => (
           <div
-            key={index} // 🔥 FIXED (no warning)
+            key={index}
             style={{
               border: "1px solid gold",
               margin: "10px 0",
@@ -31,7 +32,6 @@ function Admin() {
             <p><b>Email:</b> {msg.email}</p>
             <p>{msg.message}</p>
 
-            {/* 🔥 SAFE DATE */}
             {msg.createdAt && (
               <small>{new Date(msg.createdAt).toLocaleString()}</small>
             )}

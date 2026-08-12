@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "./config";
 import "./AdminOrders.css";
 
 function AdminOrders() {
@@ -21,7 +22,7 @@ function AdminOrders() {
 
     setLoading(true);
 
-    fetch("http://localhost:5000/api/orders", {
+    fetch(`${API_BASE_URL}/api/orders`, {
       headers: {
         Authorization: "Bearer " + token,
       },
@@ -47,7 +48,7 @@ function AdminOrders() {
   const updateStatus = async (id, status) => {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/orders/${id}`, {
+    await fetch(`${API_BASE_URL}/api/orders/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +60,6 @@ function AdminOrders() {
     fetchOrders();
   };
 
-  // 🔍 FILTER
   const filtered = orders.filter(o => {
     const matchStatus =
       statusFilter === "All" || o.status === statusFilter;
@@ -70,7 +70,6 @@ function AdminOrders() {
     return matchStatus && matchSearch;
   });
 
-  // 🔥 PAGINATION
   const indexOfLast = currentPage * ordersPerPage;
   const currentOrders = filtered.slice(
     indexOfLast - ordersPerPage,

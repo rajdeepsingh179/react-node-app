@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom"; // 🔥 ADD
+import { useLocation } from "react-router-dom";
+import { API_BASE_URL, getImageUrl } from "./config";
 import "./App.css";
 
 function Products({ cart, setCart }) {
@@ -7,7 +8,7 @@ function Products({ cart, setCart }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
 
-  const location = useLocation(); // 🔥 ADD
+  const location = useLocation();
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -25,7 +26,6 @@ function Products({ cart, setCart }) {
     fetchProducts();
   }, []);
 
-  // 🔥 NAVBAR SEARCH CONNECT
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get("search");
@@ -36,7 +36,7 @@ function Products({ cart, setCart }) {
   }, [location.search]);
 
   const fetchProducts = () => {
-    fetch("http://localhost:5000/api/products")
+    fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => setProducts(data))
       .catch(err => console.log(err));
@@ -60,7 +60,7 @@ function Products({ cart, setCart }) {
 
       if (imageFile) formData.append("image", imageFile);
 
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${API_BASE_URL}/api/products`, {
         method: "POST",
         headers: { Authorization: "Bearer " + token },
         body: formData
@@ -72,19 +72,19 @@ function Products({ cart, setCart }) {
         alert("Product Added ✅");
         fetchProducts();
       } else {
-        alert("Not authorized ❌");
+        alert("Not authorized");
       }
 
     } catch (err) {
       console.log(err);
-      alert("Server Error ❌");
+      alert("Server Error");
     }
   };
 
   const deleteProduct = async (id) => {
     const token = getToken();
 
-    const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
       method: "DELETE",
       headers: { Authorization: "Bearer " + token }
     });
@@ -93,7 +93,6 @@ function Products({ cart, setCart }) {
     if (data.success) fetchProducts();
   };
 
-  // 🔥 CART LOGIC
   const addToCart = (item) => {
     const exist = cart.find(p => p._id === item._id);
 
@@ -108,7 +107,6 @@ function Products({ cart, setCart }) {
     }
   };
 
-  // 🔥 FILTER
   const filteredProducts = products.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()) &&
     (category === "All" || item.category === category)
@@ -162,11 +160,7 @@ function Products({ cart, setCart }) {
             <span className="product-dot"></span>
 
             <img
-              src={
-                item.imageUrl
-                  ? `http://localhost:5000${item.imageUrl}`
-                  : "https://via.placeholder.com/150"
-              }
+              src={getImageUrl(item.imageUrl)}
               alt={item.name}
             />
 

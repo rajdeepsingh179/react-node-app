@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer
 } from "recharts";
+import { API_BASE_URL } from "./config";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
@@ -13,7 +14,13 @@ function AdminDashboard() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/analytics")
+    const token = localStorage.getItem("token");
+    
+    fetch(`${API_BASE_URL}/api/admin/analytics`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(res => {
         setStats({
@@ -22,7 +29,8 @@ function AdminDashboard() {
         });
 
         setData(res.revenueData);
-      });
+      })
+      .catch(err => console.log(err));
   }, []);
 
   return (

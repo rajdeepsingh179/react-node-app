@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL, getImageUrl } from "./config";
 import "./SearchOverlay.css";
 
 function SearchOverlay({ isOpen, setIsOpen }) {
@@ -11,7 +12,6 @@ function SearchOverlay({ isOpen, setIsOpen }) {
 
   const navigate = useNavigate();
 
-  // 🔥 load recent
   useEffect(() => {
     if (isOpen) {
       const saved = JSON.parse(localStorage.getItem("recentSearches")) || [];
@@ -19,14 +19,12 @@ function SearchOverlay({ isOpen, setIsOpen }) {
     }
   }, [isOpen]);
 
-  // 🔥 fetch products
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => setProducts(data));
   }, []);
 
-  // 🔥 debounce
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(query);
@@ -35,18 +33,16 @@ function SearchOverlay({ isOpen, setIsOpen }) {
     return () => clearTimeout(timer);
   }, [query]);
 
-  // 🔥 suggestions (API + fallback)
   useEffect(() => {
     if (!debouncedQuery.trim()) {
       setSuggestions([]);
       return;
     }
 
-    fetch(`http://localhost:5000/api/search?q=${debouncedQuery}`)
+    fetch(`${API_BASE_URL}/api/search?q=${debouncedQuery}`)
       .then(res => res.json())
       .then(data => setSuggestions(data))
       .catch(() => {
-        // fallback (old logic)
         const filtered = products
           .filter(p =>
             p.name.toLowerCase().includes(debouncedQuery.toLowerCase())
@@ -58,10 +54,8 @@ function SearchOverlay({ isOpen, setIsOpen }) {
 
   }, [debouncedQuery, products]);
 
-  // 🔥 trending
   const trending = products.slice(0, 5);
 
-  // 🔥 save recent
   const saveRecent = (value) => {
     let updated = [value, ...recent.filter(item => item !== value)];
     updated = updated.slice(0, 5);
@@ -70,13 +64,11 @@ function SearchOverlay({ isOpen, setIsOpen }) {
     setRecent(updated);
   };
 
-  // 🔥 clear recent
   const clearRecent = () => {
     localStorage.removeItem("recentSearches");
     setRecent([]);
   };
 
-  // 🔥 enter search
   const handleSearch = (e) => {
     if (e.key === "Enter" && query.trim()) {
       saveRecent(query);
@@ -160,7 +152,7 @@ function SearchOverlay({ isOpen, setIsOpen }) {
             {trending.map((item) => (
               <div key={item._id} className="suggestion-item" onClick={() => handleClick(item.name)}>
                 {item.image && (
-                  <img src={`http://localhost:5000/${item.image}`} alt={item.name}/>
+                  <img src={getImageUrl(item.imageUrl || item.image)} alt={item.name}/>
                 )}
                 <div>
                   <p>{item.name}</p>
@@ -177,7 +169,7 @@ function SearchOverlay({ isOpen, setIsOpen }) {
             {suggestions.map((item) => (
               <div key={item._id} className="suggestion-item" onClick={() => handleClick(item.name)}>
                 {item.image && (
-                  <img src={`http://localhost:5000/${item.image}`} alt={item.name}/>
+                  <img src={getImageUrl(item.imageUrl || item.image)} alt={item.name}/>
                 )}
                 <div>
                   <p>{item.name}</p>

@@ -1,13 +1,9 @@
 const express = require("express");
-const router = express.Router(); // ✅ THIS WAS MISSING
+const router = express.Router();
 
 const Product = require("../models/Product");
 
-// 🔍 DEBUG
-console.log("TYPE:", typeof Product);
-console.log("HAS FIND:", Product && Product.find);
-
-// 🔥 SEARCH
+// SEARCH
 router.get("/", async (req, res) => {
   try {
     const q = req.query.q || "";
@@ -22,7 +18,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 🔥 TEST
+// TEST
 router.get("/test", (req, res) => {
   res.json({ ok: true });
 });
